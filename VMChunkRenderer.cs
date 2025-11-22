@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
@@ -23,36 +24,32 @@ namespace VoxelMesh
         }
 
 
-        public void SetVoxelChunk(VMChunk<VMVoxelInfo_Color> _voxelChunk)
+        public virtual void SetVoxelChunk(VMChunk<VMVoxelInfo_Color> _voxelChunk)
         {
             voxelChunk?.OnRegenerated.RemoveListener(OnVoxelChunkRegenerated);
             voxelChunk = _voxelChunk;
             voxelChunk?.OnRegenerated.AddListener(OnVoxelChunkRegenerated);
             OnVoxelChunkRegenerated(voxelChunk);
         }
-        
+
         protected virtual void OnVoxelChunkRegenerated(VMChunk<VMVoxelInfo_Color> _voxelChunk)
         {
             UpdateMesh();
         }
-
-        protected void UpdateMesh()
+        
+        protected virtual void UpdateMesh()
         {
             if (voxelChunk == null)
             {
                 meshFilter.mesh = null;
                 return;
             }
-
+            
             VMData<VMVoxelInfo_Color> data = voxelChunk.CreateCombinedData();
             
-            // TODO: Make mesh with data
-            
-            Debug.Log($"Rendering chunk with {data.paletteByPosition.Count} voxels (palette size of {data.infoByPalette.Count})");
-            foreach (KeyValuePair<int3, ushort> pair in data.paletteByPosition)
-            {
-                Debug.Log($"Voxel: {pair.Key} = {data.infoByPalette[pair.Value].ToString()}");
-            }
+            VMVoxelInfo_Color.GenerateVoxelMesh(data, out Mesh mesh, out Texture2D texture);
+            meshFilter.mesh = mesh;
+            meshRenderer.material.mainTexture = texture;
         }
     }
 } // VoxelMesh namespace

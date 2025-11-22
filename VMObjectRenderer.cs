@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,11 +11,11 @@ namespace VoxelMesh
     public class VMObjectRenderer : MonoBehaviour
     {
         protected VMObject<VMVoxelInfo_Color> voxelObject { get; private set; }
-        
+
         private List<VMChunkRenderer> chunkRenderers = new();
         
 
-        public void SetVoxelObject(VMObject<VMVoxelInfo_Color> _voxelObject)
+        public virtual void SetVoxelObject(VMObject<VMVoxelInfo_Color> _voxelObject)
         {
             voxelObject?.OnRegenerated.RemoveListener(OnVoxelObjectRegenerated);
             voxelObject = _voxelObject;
